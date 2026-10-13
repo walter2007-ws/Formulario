@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Formulario turistico</title>
+</head>
+<body>
+    <h2>Formulario turistico</h2>
+    <form>
+        <label for="nombre">Nombre: </label>
+        <input type="text" id="nombre" name="nombre"><br>
+        <label for="nacionalidad">Nacionalidad: </label>
+        <input type="text" id="nacionalidad" name="nacionalidad"><br>
+        
+        <br>
+        <label>Rango de edad: </label><br>
+        <input type="radio" id="m18" name="edad" value="Menos de 18">
+        <label for="m18"> Menos de 18 </label ><br>
+        <input type="radio" id="18a25" name="edad" value="18 a 25">
+        <label for="18a25"> 18 a 25 </label ><br>
+        <input type="radio" id="26a40" name="edad" value="26 a 40">
+        <label for="26a40"> 26 a 40 </label ><br>
+        <input type="radio" id="41a60" name="edad" value="41 a 60">
+        <label for="41a60"> 41 a 60 </label ><br>
+        <input type="radio" id="M60" name="edad" value="Mayor a 60">
+        <label for="M60"> Mayor a 60 </label ><br>
+    </form>
+    <form>    
+        <br>
+        <label>Tipo de acompañante: </label><br>
+        <input type="radio" id="Solo" name="acompanante" value="Solo/a">
+        <label for="Solo"> Solo/a </label ><br>
+        <input type="radio" id="Pareja" name="acompanante" value="Pareja">
+        <label for="Pareja"> Pareja </label ><br>
+        <input type="radio" id="familia" name="acompanante" value="Familia">
+        <label for="familia"> Familia </label ><br>
+        <input type="radio" id="amigos" name="acompanante" value="Amigos">
+        <label for="amigos"> Amigos </label ><br>
+        <input type="radio" id="tour" name="acompanante" value="Tour">
+        <label for="tour"> Tour </label ><br>
+    </form>
+    <form>
+        <br>
+        <label>Medio por el que conoció el sitio: </label><br>
+        <input type="checkbox" id="redes" name="medio" value="Redes sociales">
+        <label for="redes"> Redes sociales </label ><br>
+        <input type="checkbox" id="recomendacion" name="medio" value="Recomendacion">
+        <label for="recomendacion"> Recomendacion </label ><br>
+        <input type="checkbox" id="agencia" name="medio" value="Agencia de viajes">
+        <label for="agencia"> Agencia de viajes </label ><br>
+    </form>
+    <form>    
+        <br>
+        <label>Actividades realizadas: </label><br>
+        <input type="checkbox" id="caminata" name="actividad" value="Caminata">
+        <label for="caminata"> Caminata </label ><br>
+        <input type="checkbox" id="glaciar" name="actividad" value="Ascenso al glaciar">
+        <label for="glaciar"> Ascenso al glaciar </label ><br>
+        <input type="checkbox" id="camping" name="actividad" value="Camping">
+        <label for="camping"> Camping </label ><br>
+    </form>  
+    <form>  
+        <br>
+        <label>Servicios utilizados: </label><br>
+        <input type="checkbox" id="alimentacion" name="servicio" value="Alimentación">
+        <label for="alimentacion"> Alimentación </label ><br>
+        <input type="checkbox" id="parqueadero" name="servicio" value="Parqueadero">
+        <label for="parqueadero"> Parqueadero </label ><br>
+        <input type="checkbox" id="alojamiento" name="servicio" value="Alojamiento">
+        <label for="alojamiento"> Alojamiento </label ><br>
+    </form>
+    <form>   
+        <br>
+        <label>Nivel de satisfacción general: </label><br>
+        <input type="radio" id="msas" name="satisfaccion" value="Muy satisfecho">
+        <label for="msas"> Muy satisfecho </label ><br>
+        <input type="radio" id="sas" name="satisfaccion" value="Satisfecho">
+        <label for="sas"> Satisfecho </label ><br>
+        <input type="radio" id="neu" name="satisfaccion" value="Neutral">
+        <label for="neu"> Neutral </label ><br>
+        <input type="radio" id="isas" name="satisfaccion" value="Insatisfecho">
+        <label for="isas"> Insatisfecho </label ><br>
+        <input type="radio" id="misas" name="satisfaccion" value="Muy insatisfecho">
+        <label for="misas"> Muy insatisfecho </label ><br>
+    </form>
+    <form>
+        <br>
+        <label>Recomendaría el sitio: </label><br>
+        <input type="radio" id="si" name="recomienda" value="Si">
+        <label for="si"> Si </label ><br>
+        <input type="radio" id="tv" name="recomienda" value="Tal vez">
+        <label for="tv"> Tal vez </label ><br>
+        <input type="radio" id="no" name="recomienda" value="No">
+        <label for="no"> No </label ><br>
+
+        <label for="Comentarios">Comentarios o sugerencias: </label>
+        <textarea name="Comentarios" rows="10" cols="30">
+        
+        </textarea>
+        <input type="submit" value="Submit">
+    </form>
+    
+</body>
+</html>
