@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Formulario turistico</title>
+
+    <style>
+        *, *::before, *::after { box-sizing: border-box; }
+
+        :root {
+            --panel: 44rem;
+            --papel: #fbf8f1;
+            --tinta: #1c2541;
+            --indigo: #2b3a67;
+            --lava: #d1432b;
+            --trazo: #cfc8b8;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background: #cfe9f4;
+            color: var(--tinta);
+            font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            line-height: 1.5;
+        }
+
+        /* Fondo: volcán Cotopaxi (ilustración SVG integrada) ocupa el área libre a la izquierda del panel */
+        .scene {
+            position: fixed;
+            top: 0; bottom: 0; left: 0;
+            right: var(--panel);
+            z-index: -1;
+            overflow: hidden;
+        }
+        .scene svg { width: 100%; height: 100%; display: block; }
+
+        /* Opcional: si guardas una foto como cotopaxi.jpg junto a este archivo,
+           se muestra automáticamente sobre la ilustración. */
+        .scene-photo { background: url('cotopaxi.jpg') center / cover no-repeat; }
+
+        .nube-a { animation: deriva 70s ease-in-out infinite alternate; }
+        .nube-b { animation: deriva 95s ease-in-out infinite alternate-reverse; }
+        .brasa  { animation: brasa 3.5s ease-in-out infinite alternate; }
+        .fumarola {
+            transform-box: fill-box;
+            transform-origin: center;
+            animation: fumarola 11s ease-out infinite;
+        }
+
+        @keyframes deriva { from { transform: translateX(-80px); } to { transform: translateX(80px); } }
+        @keyframes brasa  { from { opacity: .6; } to { opacity: 1; } }
+        @keyframes fumarola {
+            0%   { opacity: 0; transform: translateY(0) scale(.6); }
+            20%  { opacity: .6; }
+            100% { opacity: 0; transform: translateY(-80px) scale(1.6); }
+        }
+        @keyframes entrada {
+            from { opacity: 0; transform: translateX(28px); }
+            to   { opacity: 1; transform: none; }
+        }
+
+        /* Panel del formulario */
+        .panel {
+            width: var(--panel);
+            max-width: 100%;
+            min-height: 100vh;
+            margin-left: auto;
+            padding: 3.5rem 3rem 3rem;
+            background: var(--papel);
+            box-shadow: -14px 0 40px rgba(28, 37, 65, .18);
+            animation: entrada .7s ease-out both;
+        }
+
+        .panel header {
+            margin-bottom: 2rem;
+            padding-bottom: 1.25rem;
+            border-bottom: 3px double var(--indigo);
+        }
+
+        .panel h2 {
+            margin: 0;
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: 2.1rem;
+            font-weight: 700;
+            color: var(--indigo);
+            line-height: 1.15;
+        }
+
+        /* Campos de texto: solo línea inferior */
+        .datos {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 1.75rem;
+        }
+
+        .campo label {
+            display: block;
+            margin-bottom: .2rem;
+            font-size: .9rem;
+            font-weight: 600;
+            color: var(--indigo);
+        }
+
+        input[type="text"], textarea {
+            display: block;
+            width: 100%;
+            padding: .5rem .1rem;
+            font: inherit;
+            color: var(--tinta);
+            background: transparent;
+            border: 0;
+            border-bottom: 2px solid var(--trazo);
+            border-radius: 0;
+            transition: border-color .25s ease, background-color .25s ease;
+        }
+
+        input[type="text"]:focus, textarea:focus {
+            outline: none;
+            border-bottom-color: var(--lava);
+            background: rgba(209, 67, 43, .04);
+        }
+
+        /* Preguntas */
+        fieldset.bloque {
+            margin: 0;
+            padding: 1.1rem 0 1.25rem;
+            min-width: 0;
+            border: 0;
+            border-top: 1px solid var(--trazo);
+        }
+
+        legend {
+            float: none;
+            width: auto;
+            padding: 0 .75rem 0 0;
+            font-size: .9rem;
+            font-weight: 600;
+            color: var(--indigo);
+        }
+
+        .opciones { display: flex; flex-wrap: wrap; gap: .6rem; margin-top: .4rem; }
+
+        /* Opciones como etiquetas seleccionables */
+        .opcion { position: relative; }
+
+        .opcion input {
+            position: absolute;
+            opacity: 0;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            cursor: pointer;
+        }
+
+        .opcion label {
+            display: inline-block;
+            padding: .4rem 1rem;
+            font-size: .95rem;
+            border: 1.5px solid var(--trazo);
+            border-radius: 999px;
+            background: #fff;
+            cursor: pointer;
+            transition: background-color .2s ease, border-color .2s ease, color .2s ease, transform .2s ease;
+        }
+
+        .opcion:hover label { border-color: var(--indigo); transform: translateY(-1px); }
+
+        .opcion input:checked + label {
+            background: var(--indigo);
+            border-color: var(--indigo);
+            color: #fff;
+        }
+
+        .opcion input:focus-visible + label {
+            outline: 3px solid var(--lava);
+            outline-offset: 2px;
+        }
+
+        /* Comentarios y envío */
+        .comentarios { margin-top: .5rem; padding-top: 1.1rem; border-top: 1px solid var(--trazo); }
+        textarea {
+            margin-top: .4rem;
+            padding: .7rem .8rem;
+            border: 2px solid var(--trazo);
+            border-radius: .3rem;
+            background: #fff;
+            resize: vertical;
+        }
+        textarea:focus { border-color: var(--lava); background: #fff; }
+
+        input[type="submit"] {
+            display: block;
+            width: 100%;
+            margin-top: 1.5rem;
+            padding: .85rem 1rem;
+            font: inherit;
+            font-size: 1.05rem;
+            font-weight: 600;
+            letter-spacing: .02em;
+            color: #fff;
+            background: var(--indigo);
+            border: 0;
+            border-radius: .3rem;
+            cursor: pointer;
+            transition: background-color .25s ease, transform .2s ease, box-shadow .2s ease;
+        }
+        input[type="submit"]:hover, input[type="submit"]:focus-visible {
+            background: var(--lava);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 18px rgba(209, 67, 43, .3);
+        }
+        input[type="submit"]:active { transform: translateY(0); }
+
+        /* Pantallas pequeñas: el volcán queda arriba y el panel sube desde abajo */
+        @media (max-width: 900px) {
+            .scene { right: 0; }
+            .panel {
+                width: 100%;
+                margin-top: 36vh;
+                min-height: 64vh;
+                padding: 2rem 1.5rem 2.5rem;
+                border-radius: 1.25rem 1.25rem 0 0;
+                box-shadow: 0 -10px 30px rgba(28, 37, 65, .2);
+                animation-name: subida;
+            }
+            .panel h2 { font-size: 1.7rem; }
+        }
+        @media (max-width: 520px) {
+            .datos { grid-template-columns: 1fr; }
+        }
+
+        @keyframes subida {
+            from { opacity: 0; transform: translateY(24px); }
+            to   { opacity: 1; transform: none; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { animation: none !important; transition: none !important; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Fondo decorativo: volcán Cotopaxi de día -->
+    <div class="scene" aria-hidden="true">
+        <svg viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+                <linearGradient id="cielo" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0" stop-color="#6fb8e3"/>
+                    <stop offset=".55" stop-color="#cfe9f4"/>
+                    <stop offset="1" stop-color="#fbeccf"/>
+                </linearGradient>
+                <radialGradient id="sol" cx=".5" cy=".5" r=".5">
+                    <stop offset="0" stop-color="#fff6d6" stop-opacity="1"/>
+                    <stop offset=".35" stop-color="#fff2c2" stop-opacity=".7"/>
+                    <stop offset="1" stop-color="#fff2c2" stop-opacity="0"/>
+                </radialGradient>
+                <linearGradient id="paramo" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0" stop-color="#d2b266"/>
+                    <stop offset="1" stop-color="#8a7236"/>
+                </linearGradient>
+            </defs>
+
+            <rect width="1600" height="900" fill="url(#cielo)"/>
+            <circle cx="260" cy="170" r="190" fill="url(#sol)"/>
+            <circle cx="260" cy="170" r="42" fill="#fffbe8"/>
+
+            <!-- Nubes -->
+            <g class="nube-a" fill="#ffffff" opacity=".9">
+                <ellipse cx="360" cy="330" rx="130" ry="20"/>
+                <ellipse cx="430" cy="314" rx="80" ry="17"/>
+            </g>
+            <g class="nube-b" fill="#ffffff" opacity=".8">
+                <ellipse cx="1210" cy="250" rx="150" ry="22"/>
+                <ellipse cx="1285" cy="233" rx="85" ry="17"/>
+            </g>
+
+            <!-- Cono en facetas -->
+            <polygon fill="#6f86ad" points="230,650 420,560 560,430 660,340 735,262 760,420 560,650"/>
+            <polygon fill="#5a6e96" points="735,262 800,248 830,650 560,650 760,420"/>
+            <polygon fill="#3f4f78" points="800,248 865,262 960,420 1010,650 830,650"/>
+            <polygon fill="#2c3a5e" points="865,262 940,340 1040,430 1180,560 1370,650 1010,650 960,420"/>
+
+            <!-- Glaciar -->
+            <polygon fill="#f4f9fc" points="686,322 735,262 800,248 796,360 770,418 752,360 736,392 718,350 703,368"/>
+            <polygon fill="#bcd0e2" points="800,248 865,262 914,322 898,360 880,336 866,400 842,356 828,432 806,370 796,360"/>
+
+            <!-- Cráter y fumarola -->
+            <ellipse cx="800" cy="254" rx="50" ry="8" fill="#e9f1f7"/>
+            <ellipse cx="800" cy="255" rx="34" ry="5" fill="#3b4a6e"/>
+            <ellipse class="brasa" cx="800" cy="256" rx="20" ry="2.6" fill="#e0502e"/>
+            <ellipse class="fumarola" cx="800" cy="232" rx="30" ry="14" fill="#f7fafc"/>
+
+            <!-- Cordilleras y páramo -->
+            <path d="M0 668 C140 624 260 660 400 636 C540 612 640 664 780 672 C930 682 1050 628 1210 642 C1370 656 1490 626 1600 640 L1600 900 L0 900 Z" fill="#8aa0bf"/>
+            <path d="M0 726 C180 684 340 738 540 710 C740 682 900 746 1120 714 C1300 690 1460 728 1600 706 L1600 900 L0 900 Z" fill="#6f8a8c"/>
+            <path d="M0 792 C200 746 380 804 600 774 C820 744 1000 812 1250 778 C1400 758 1500 782 1600 768 L1600 900 L0 900 Z" fill="url(#paramo)"/>
+            <g stroke="#a98a43" stroke-width="3" stroke-linecap="round" opacity=".7">
+                <path d="M120 850 l-6 -26 M130 850 l2 -30 M140 850 l8 -24"/>
+                <path d="M520 862 l-6 -26 M530 862 l2 -30 M540 862 l8 -24"/>
+                <path d="M980 856 l-6 -26 M990 856 l2 -30 M1000 856 l8 -24"/>
+                <path d="M1380 866 l-6 -26 M1390 866 l2 -30 M1400 866 l8 -24"/>
+            </g>
+        </svg>
+    </div>
+    <div class="scene scene-photo" aria-hidden="true"></div>
+
+    <main class="panel">
+        <header>
+            <h2>Formulario turistico</h2>
+        </header>
+
+        <form>
+            <div class="datos">
+                <div class="campo">
+                    <label for="nombre">Nombre: </label>
+                    <input type="text" id="nombre" name="nombre">
+                </div>
+                <div class="campo">
+                    <label for="nacionalidad">Nacionalidad: </label>
+                    <input type="text" id="nacionalidad" name="nacionalidad">
+                </div>
+            </div>
+
+                <fieldset class="bloque">
+                    <legend>Rango de edad: </legend>
+                    <div class="opciones">
+                        <div class="opcion">
+                            <input type="radio" id="m18" name="edad" value="Menos de 18">
+                            <label for="m18"> Menos de 18 </label>
+                        </div>
+                        <div class="opcion">
+                            <input type="radio" id="18a25" name="edad" value="18 a 25">
+                            <label for="18a25"> 18 a 25 </label>
+                        </div>
+                        <div class="opcion">
+                            <input type="radio" id="26a40" name="edad" value="26 a 40">
+                            <label for="26a40"> 26 a 40 </label>
+                        </div>
+                        <div class="opcion">
+                            <input type="radio" id="41a60" name="edad" value="41 a 60">
+                            <label for="41a60"> 41 a 60 </label>
+                        </div>
+                        <div class="opcion">
+                            <input type="radio" id="M60" name="edad" value="Mayor a 60">
+                            <label for="M60"> Mayor a 60 </label>
+                        </div>
+                    </div>
+                </fieldset>
+
+                <fieldset class="bloque">
+                    <legend>Tipo de acompañante: </legend>
+                    <div class="opciones">
+                        <div class="opcion">
+                            <input type="radio" id="Solo" name="acompanante" value="Solo/a">
+                            <label for="Solo"> Solo/a </label>
+                        </div>
+                        <div class="opcion">
+                            <input type="radio" id="Pareja" name="acompanante" value="Pareja">
+                            <label for="Pareja"> Pareja </label>
+                        </div>
+                        <div class="opcion">
+                            <input type="radio" id="familia" name="acompanante" value="Familia">
+                            <label for="familia"> Familia </label>
+                        </div>
+                        <div class="opcion">
+                            <input type="radio" id="amigos" name="acompanante" value="Amigos">
+                            <label for="amigos"> Amigos </label>
+                        </div>
+                        <div class="opcion">
+                            <input type="radio" id="tour" name="acompanante" value="Tour">
+                            <label for="tour"> Tour </label>
+                        </div>
+                    </div>
+                </fieldset>
+
+                <fieldset class="bloque">
+                    <legend>Medio por el que conoció el sitio: </legend>
+                    <div class="opciones">
+                        <div class="opcion">
+                            <input type="checkbox" id="redes" name="medio" value="Redes sociales">
+                            <label for="redes"> Redes sociales </label>
+                        </div>
+                        <div class="opcion">
+                            <input type="checkbox" id="recomendacion" name="medio" value="Recomendacion">
+                            <label for="recomendacion"> Recomendacion </label>
+                        </div>
+                        <div class="opcion">
+                            <input type="checkbox" id="agencia" name="medio" value="Agencia de viajes">
+                            <label for="agencia"> Agencia de viajes </label>
+                        </div>
+                    </div>
+                </fieldset>
+
+                <fieldset class="bloque">
+                    <legend>Actividades realizadas: </legend>
+                    <div class="opciones">
+                        <div class="opcion">
+                            <input type="checkbox" id="caminata" name="actividad" value="Caminata">
+                            <label for="caminata"> Caminata </label>
+                        </div>
+                        <div class="opcion">
+                            <input type="checkbox" id="glaciar" name="actividad" value="Ascenso al glaciar">
+                            <label for="glaciar"> Ascenso al glaciar </label>
+                        </div>
+                        <div class="opcion">
+                            <input type="checkbox" id="camping" name="actividad" value="Camping">
+                            <label for="camping"> Camping </label>
+                        </div>
+                    </div>
+                </fieldset>
+
+                <fieldset class="bloque">
+                    <legend>Servicios utilizados: </legend>
+                    <div class="opciones">
+                        <div class="opcion">
+                            <input type="checkbox" id="alimentacion" name="servicio" value="Alimentación">
+                            <label for="alimentacion"> Alimentación </label>
+                        </div>
+                        <div class="opcion">
+                            <input type="checkbox" id="parqueadero" name="servicio" value="Parqueadero">
+                            <label for="parqueadero"> Parqueadero </label>
+                        </div>
+                        <div class="opcion">
+                            <input type="checkbox" id="alojamiento" name="servicio" value="Alojamiento">
+                            <label for="alojamiento"> Alojamiento </label>
+                        </div>
+                    </div>
+                </fieldset>
+
+                <fieldset class="bloque">
+                    <legend>Nivel de satisfacción general: </legend>
+                    <div class="opciones">
+                        <div class="opcion">
+                            <input type="radio" id="msas" name="satisfaccion" value="Muy satisfecho">
+                            <label for="msas"> Muy satisfecho </label>
+                        </div>
+                        <div class="opcion">
+                            <input type="radio" id="sas" name="satisfaccion" value="Satisfecho">
+                            <label for="sas"> Satisfecho </label>
+                        </div>
+                        <div class="opcion">
+                            <input type="radio" id="neu" name="satisfaccion" value="Neutral">
+                            <label for="neu"> Neutral </label>
+                        </div>
+                        <div class="opcion">
+                            <input type="radio" id="isas" name="satisfaccion" value="Insatisfecho">
+                            <label for="isas"> Insatisfecho </label>
+                        </div>
+                        <div class="opcion">
+                            <input type="radio" id="misas" name="satisfaccion" value="Muy insatisfecho">
+                            <label for="misas"> Muy insatisfecho </label>
+                        </div>
+                    </div>
+                </fieldset>
+
+                <fieldset class="bloque">
+                    <legend>Recomendaría el sitio: </legend>
+                    <div class="opciones">
+                        <div class="opcion">
+                            <input type="radio" id="si" name="recomienda" value="Si">
+                            <label for="si"> Si </label>
+                        </div>
+                        <div class="opcion">
+                            <input type="radio" id="tv" name="recomienda" value="Tal vez">
+                            <label for="tv"> Tal vez </label>
+                        </div>
+                        <div class="opcion">
+                            <input type="radio" id="no" name="recomienda" value="No">
+                            <label for="no"> No </label>
+                        </div>
+                    </div>
+                </fieldset>
+
+            <div class="campo comentarios">
+                <label for="Comentarios">Comentarios o sugerencias: </label>
+                <textarea id="Comentarios" name="Comentarios" rows="6"></textarea>
+            </div>
+
+            <input type="submit" value="Submit">
+        </form>
+    </main>
+</body>
+</html>

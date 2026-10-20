@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Formulario turistico</title>
+
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        :root {
+            --ink: #1f2d3d;
+            --glacier: #1f6f8b;
+            --glacier-dark: #16536a;
+            --snow: #f3f7fa;
+            --line: #d5e0e8;
+            --ember: #e8743b;
+            --ember-dark: #c85a24;
+        }
+
+        body {
+            color: var(--ink);
+            background: #0d2038;
+            min-height: 100vh;
+        }
+
+        /* Fondo: volcán Cotopaxi (ilustración SVG integrada) */
+        .scene {
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .scene svg {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        /* Opcional: si guardas una foto como cotopaxi.jpg junto a este archivo,
+           se muestra automáticamente sobre la ilustración. */
+        .scene-photo {
+            background: url('cotopaxi.jpg') center / cover no-repeat;
+        }
+
+        .page-main {
+            padding-top: clamp(11rem, 42vh, 30rem);
+        }
+
+        .cloud-a { animation: drift 60s ease-in-out infinite alternate; }
+        .cloud-b { animation: drift 85s ease-in-out infinite alternate-reverse; }
+        .crater-glow { animation: glow 4s ease-in-out infinite alternate; }
+        .plume {
+            transform-box: fill-box;
+            transform-origin: center;
+            animation: plume 10s ease-out infinite;
+        }
+
+        @keyframes drift {
+            from { transform: translateX(-70px); }
+            to   { transform: translateX(70px); }
+        }
+
+        @keyframes glow {
+            from { opacity: .55; }
+            to   { opacity: 1; }
+        }
+
+        @keyframes plume {
+            0%   { opacity: 0; transform: translateY(0) scale(.6); }
+            20%  { opacity: .45; }
+            100% { opacity: 0; transform: translateY(-90px) scale(1.7); }
+        }
+
+        /* Tarjeta principal */
+        .form-card {
+            border: 1px solid var(--line);
+            border-radius: .75rem;
+            overflow: hidden;
+            background: rgba(255, 255, 255, .9);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            box-shadow: 0 18px 50px rgba(5, 15, 30, .45);
+            animation: rise .6s ease-out both;
+        }
+
+        .form-card .card-header {
+            background: linear-gradient(120deg, #0d2038 0%, #1d4f6e 60%, #1f6f8b 100%);
+            color: #fff;
+            padding: 1.5rem 2rem;
+            border-bottom: 4px solid var(--ember);
+        }
+
+        .form-card .card-header h2 {
+            margin: 0;
+            font-size: 1.6rem;
+            font-weight: 600;
+            letter-spacing: .01em;
+        }
+
+        .form-card .card-body {
+            padding: 2rem;
+        }
+
+        /* Bloques de cada pregunta */
+        fieldset.section-box {
+            height: 100%;
+            padding: 1.1rem 1.25rem 1rem;
+            background: rgba(255, 255, 255, .85);
+            border: 1px solid var(--line);
+            border-left: 4px solid var(--glacier);
+            border-radius: .5rem;
+            transition: box-shadow .25s ease, border-color .25s ease;
+        }
+
+        fieldset.section-box:hover,
+        fieldset.section-box:focus-within {
+            border-color: var(--glacier);
+            box-shadow: 0 4px 14px rgba(31, 111, 139, .12);
+        }
+
+        fieldset.section-box legend,
+        .field-label {
+            float: none;
+            width: auto;
+            margin-bottom: .75rem;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--glacier-dark);
+        }
+
+        /* Campos de texto */
+        .form-control {
+            border-color: var(--line);
+            transition: border-color .2s ease, box-shadow .2s ease;
+        }
+
+        .form-control:focus {
+            border-color: var(--glacier);
+            box-shadow: 0 0 0 .2rem rgba(31, 111, 139, .18);
+        }
+
+        /* Casillas y botones de radio */
+        .form-check-input {
+            cursor: pointer;
+            border-color: #8aa2b2;
+            transition: background-color .2s ease, border-color .2s ease, box-shadow .2s ease;
+        }
+
+        .form-check-input:checked {
+            background-color: var(--glacier);
+            border-color: var(--glacier);
+        }
+
+        .form-check-input:focus {
+            border-color: var(--glacier);
+            box-shadow: 0 0 0 .2rem rgba(31, 111, 139, .2);
+        }
+
+        .form-check-label {
+            cursor: pointer;
+            transition: color .2s ease;
+        }
+
+        .form-check:hover .form-check-label {
+            color: var(--glacier);
+        }
+
+        /* Botón */
+        .btn-brand {
+            background: linear-gradient(135deg, var(--ember), #f0953f);
+            border-color: var(--ember);
+            color: #fff;
+            font-weight: 600;
+            padding: .6rem 2.5rem;
+            transition: background-color .2s ease, transform .2s ease, box-shadow .2s ease;
+        }
+
+        .btn-brand:hover,
+        .btn-brand:focus {
+            background: linear-gradient(135deg, var(--ember-dark), var(--ember));
+            border-color: var(--ember-dark);
+            color: #fff;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 18px rgba(200, 90, 36, .35);
+        }
+
+        .btn-brand:active {
+            transform: translateY(0);
+        }
+
+        @keyframes rise {
+            from { opacity: 0; transform: translateY(14px); }
+            to   { opacity: 1; transform: none; }
+        }
+
+        @media (max-width: 575.98px) {
+            .form-card .card-header,
+            .form-card .card-body { padding: 1.25rem; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation: none !important;
+                transition: none !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Fondo decorativo: volcán Cotopaxi -->
+    <div class="scene" aria-hidden="true">
+        <svg viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+                <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0" stop-color="#0d2038"/>
+                    <stop offset=".45" stop-color="#2f6390"/>
+                    <stop offset=".72" stop-color="#e9a77a"/>
+                    <stop offset="1" stop-color="#f6cf9f"/>
+                </linearGradient>
+                <linearGradient id="cone" x1="0" y1="0" x2="1" y2="0">
+                    <stop offset="0" stop-color="#86a2bb"/>
+                    <stop offset=".55" stop-color="#5a7893"/>
+                    <stop offset="1" stop-color="#2f4860"/>
+                </linearGradient>
+                <linearGradient id="snow" x1="0" y1="0" x2="1" y2="0">
+                    <stop offset="0" stop-color="#ffffff"/>
+                    <stop offset=".6" stop-color="#e6f0f7"/>
+                    <stop offset="1" stop-color="#b4cadb"/>
+                </linearGradient>
+                <radialGradient id="glow" cx=".5" cy=".5" r=".5">
+                    <stop offset="0" stop-color="#ffb066" stop-opacity=".85"/>
+                    <stop offset="1" stop-color="#ffb066" stop-opacity="0"/>
+                </radialGradient>
+                <linearGradient id="haze" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0" stop-color="#f6cf9f" stop-opacity="0"/>
+                    <stop offset="1" stop-color="#f6cf9f" stop-opacity=".55"/>
+                </linearGradient>
+                <linearGradient id="grass" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0" stop-color="#4b6b3e"/>
+                    <stop offset="1" stop-color="#1b3330"/>
+                </linearGradient>
+            </defs>
+
+            <rect width="1600" height="900" fill="url(#sky)"/>
+
+            <g fill="#fff" opacity=".8">
+                <circle cx="140" cy="70" r="1.6"/><circle cx="330" cy="140" r="1.2"/>
+                <circle cx="520" cy="55" r="1.8"/><circle cx="1120" cy="90" r="1.4"/>
+                <circle cx="1310" cy="48" r="1.8"/><circle cx="1480" cy="150" r="1.3"/>
+                <circle cx="980" cy="38" r="1.2"/><circle cx="60" cy="200" r="1.2"/>
+            </g>
+
+            <ellipse class="crater-glow" cx="800" cy="250" rx="240" ry="130" fill="url(#glow)"/>
+
+            <!-- Cono -->
+            <path d="M230 650 C420 570 560 420 700 305 L735 262 Q800 245 865 262 L900 305 C1040 420 1180 570 1370 650 Z" fill="url(#cone)"/>
+            <path d="M800 247 L865 262 L900 305 C1040 420 1180 570 1370 650 L880 650 Z" fill="#14283c" opacity=".28"/>
+
+            <!-- Glaciar / nieve -->
+            <polygon fill="url(#snow)" points="688,312 735,262 800,247 865,262 912,312 896,348 874,330 860,388 832,352 814,424 790,362 764,412 744,348 722,384 710,336"/>
+
+            <!-- Cráter -->
+            <ellipse cx="800" cy="254" rx="54" ry="9" fill="#dfeaf3"/>
+            <ellipse cx="800" cy="255" rx="38" ry="5.5" fill="#33485d"/>
+            <ellipse class="crater-glow" cx="800" cy="256" rx="24" ry="3" fill="#ff9a4d"/>
+
+            <!-- Fumarola -->
+            <ellipse class="plume" cx="800" cy="232" rx="34" ry="16" fill="#ffffff"/>
+
+            <!-- Nubes -->
+            <g class="cloud-a" fill="#ffffff" opacity=".55">
+                <ellipse cx="420" cy="360" rx="150" ry="22"/>
+                <ellipse cx="500" cy="345" rx="90" ry="18"/>
+            </g>
+            <g class="cloud-b" fill="#ffffff" opacity=".45">
+                <ellipse cx="1200" cy="420" rx="170" ry="24"/>
+                <ellipse cx="1290" cy="402" rx="95" ry="18"/>
+            </g>
+
+            <rect y="500" width="1600" height="170" fill="url(#haze)"/>
+
+            <!-- Cordilleras y páramo -->
+            <path d="M0 660 C150 610 280 650 420 622 C560 592 650 650 790 662 C940 674 1060 610 1220 628 C1380 646 1500 612 1600 630 L1600 900 L0 900 Z" fill="#4a6a86"/>
+            <path d="M0 720 C180 670 340 730 540 700 C740 670 900 740 1120 706 C1300 680 1460 720 1600 696 L1600 900 L0 900 Z" fill="#35526b"/>
+            <path d="M0 790 C200 740 380 800 600 770 C820 740 1000 810 1250 775 C1400 755 1500 780 1600 765 L1600 900 L0 900 Z" fill="url(#grass)"/>
+        </svg>
+    </div>
+    <div class="scene scene-photo" aria-hidden="true"></div>
+
+    <main class="container pb-5 page-main">
+        <div class="row justify-content-center">
+            <div class="col-xl-10 col-xxl-9">
+                <div class="card form-card">
+                    <div class="card-header">
+                        <h2>Formulario turistico</h2>
+                    </div>
+
+                    <div class="card-body">
+                        <form>
+                            <div class="row g-4">
+
+                                <!-- Datos personales -->
+                                <div class="col-md-6">
+                                    <label for="nombre" class="field-label">Nombre: </label>
+                                    <input type="text" id="nombre" name="nombre" class="form-control">
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="nacionalidad" class="field-label">Nacionalidad: </label>
+                                    <input type="text" id="nacionalidad" name="nacionalidad" class="form-control">
+                                </div>
+
+                                <!-- Rango de edad -->
+                                <div class="col-md-6">
+                                    <fieldset class="section-box">
+                                        <legend>Rango de edad: </legend>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" id="m18" name="edad" value="Menos de 18">
+                                            <label class="form-check-label" for="m18"> Menos de 18 </label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" id="18a25" name="edad" value="18 a 25">
+                                            <label class="form-check-label" for="18a25"> 18 a 25 </label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" id="26a40" name="edad" value="26 a 40">
+                                            <label class="form-check-label" for="26a40"> 26 a 40 </label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" id="41a60" name="edad" value="41 a 60">
+                                            <label class="form-check-label" for="41a60"> 41 a 60 </label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" id="M60" name="edad" value="Mayor a 60">
+                                            <label class="form-check-label" for="M60"> Mayor a 60 </label>
+                                        </div>
+                                    </fieldset>
+                                </div>
+
+                                <!-- Tipo de acompañante -->
+                                <div class="col-md-6">
+                                    <fieldset class="section-box">
+                                        <legend>Tipo de acompañante: </legend>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" id="Solo" name="acompanante" value="Solo/a">
+                                            <label class="form-check-label" for="Solo"> Solo/a </label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" id="Pareja" name="acompanante" value="Pareja">
+                                            <label class="form-check-label" for="Pareja"> Pareja </label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" id="familia" name="acompanante" value="Familia">
+                                            <label class="form-check-label" for="familia"> Familia </label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" id="amigos" name="acompanante" value="Amigos">
+                                            <label class="form-check-label" for="amigos"> Amigos </label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" id="tour" name="acompanante" value="Tour">
+                                            <label class="form-check-label" for="tour"> Tour </label>
+                                        </div>
+                                    </fieldset>
+                                </div>
+
+                                <!-- Medio por el que conoció el sitio -->
+                                <div class="col-md-4">
+                                    <fieldset class="section-box">
+                                        <legend>Medio por el que conoció el sitio: </legend>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="redes" name="medio" value="Redes sociales">
+                                            <label class="form-check-label" for="redes"> Redes sociales </label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="recomendacion" name="medio" value="Recomendacion">
+                                            <label class="form-check-label" for="recomendacion"> Recomendacion </label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="agencia" name="medio" value="Agencia de viajes">
+                                            <label class="form-check-label" for="agencia"> Agencia de viajes </label>
+                                        </div>
+                                    </fieldset>
+                                </div>
+
+                                <!-- Actividades realizadas -->
+                                <div class="col-md-4">
+                                    <fieldset class="section-box">
+                                        <legend>Actividades realizadas: </legend>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="caminata" name="actividad" value="Caminata">
+                                            <label class="form-check-label" for="caminata"> Caminata </label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="glaciar" name="actividad" value="Ascenso al glaciar">
+                                            <label class="form-check-label" for="glaciar"> Ascenso al glaciar </label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="camping" name="actividad" value="Camping">
+                                            <label class="form-check-label" for="camping"> Camping </label>
+                                        </div>
+                                    </fieldset>
+                                </div>
+
+                                <!-- Servicios utilizados -->
+                                <div class="col-md-4">
+                                    <fieldset class="section-box">
+                                        <legend>Servicios utilizados: </legend>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="alimentacion" name="servicio" value="Alimentación">
+                                            <label class="form-check-label" for="alimentacion"> Alimentación </label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="parqueadero" name="servicio" value="Parqueadero">
+                                            <label class="form-check-label" for="parqueadero"> Parqueadero </label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="alojamiento" name="servicio" value="Alojamiento">
+                                            <label class="form-check-label" for="alojamiento"> Alojamiento </label>
+                                        </div>
+                                    </fieldset>
+                                </div>
+
+                                <!-- Nivel de satisfacción general -->
+                                <div class="col-md-6">
+                                    <fieldset class="section-box">
+                                        <legend>Nivel de satisfacción general: </legend>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" id="msas" name="satisfaccion" value="Muy satisfecho">
+                                            <label class="form-check-label" for="msas"> Muy satisfecho </label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" id="sas" name="satisfaccion" value="Satisfecho">
+                                            <label class="form-check-label" for="sas"> Satisfecho </label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" id="neu" name="satisfaccion" value="Neutral">
+                                            <label class="form-check-label" for="neu"> Neutral </label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" id="isas" name="satisfaccion" value="Insatisfecho">
+                                            <label class="form-check-label" for="isas"> Insatisfecho </label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" id="misas" name="satisfaccion" value="Muy insatisfecho">
+                                            <label class="form-check-label" for="misas"> Muy insatisfecho </label>
+                                        </div>
+                                    </fieldset>
+                                </div>
+
+                                <!-- Recomendaría el sitio -->
+                                <div class="col-md-6">
+                                    <fieldset class="section-box">
+                                        <legend>Recomendaría el sitio: </legend>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" id="si" name="recomienda" value="Si">
+                                            <label class="form-check-label" for="si"> Si </label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" id="tv" name="recomienda" value="Tal vez">
+                                            <label class="form-check-label" for="tv"> Tal vez </label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" id="no" name="recomienda" value="No">
+                                            <label class="form-check-label" for="no"> No </label>
+                                        </div>
+                                    </fieldset>
+                                </div>
+
+                                <!-- Comentarios -->
+                                <div class="col-12">
+                                    <label for="Comentarios" class="field-label">Comentarios o sugerencias: </label>
+                                    <textarea id="Comentarios" name="Comentarios" rows="6" class="form-control"></textarea>
+                                </div>
+
+                                <!-- Envío -->
+                                <div class="col-12 text-center pt-2">
+                                    <input type="submit" value="Submit" class="btn btn-brand">
+                                </div>
+
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>
